@@ -66,8 +66,8 @@ Execute the Shell Scripts:
 It seems that videoplayers can't handle *.ts* that good compared to *.mp4* 
 
 >**Note:** *some streams are lagging, this might be either due to the Model(s)'s Bandwith or your Bandwith.  
-This can mostly be reduced/fix by reencoding the .ts using a **real** encoder.  
-My recommendation would be **libx265** or **nvenc_hvec**  
+This can mostly be reduced/fix by reencoding the .ts using a __real__ encoder.  
+My recommendation would be __libx265__ or __nvenc_hvec__  
 I've decided to use copy, so that even lower-end devices are able to handle those files properly*  
 
 ### ffmpeg-batch-creator.py
