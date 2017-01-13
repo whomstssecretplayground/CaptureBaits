@@ -19,9 +19,10 @@ For more Informations please read the LICENSE
 
 ### Requirements \*nix
 
-* Install ffmpeg from your Packet Manager
-* Install Python3 from your Packet Manager
-* Install livestreamer from your Packet Manager
+* Install ffmpeg via your package manager
+* Install Python3 via your package manager
+* Install livestreamer via your package manager
+* Install wget via your package manager (you should seriously have this pre-installed)
 * Download or Clone this Repo
 
 ### Requirements Windows
