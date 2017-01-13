@@ -1,5 +1,5 @@
 # CaptureBaits
-A Tool-Set for capturing Livestreams containing Adult-Content from [*Chaturbate.com*](https://chaturbate.com/ "Let the Fappening begin")
+A Toolset for capturing Livestreams containing Adult-Content from [*Chaturbate.com*](https://chaturbate.com/ "Let the Fappening begin")
 
 ## Age Restrictions
 
