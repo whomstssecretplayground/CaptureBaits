@@ -1,0 +1,1 @@
+python -v -m trace -c CaptureBaits.py > log.txt
