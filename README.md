@@ -71,6 +71,13 @@ This can mostly be reduced/fix by reencoding the .ts using a __real__ encoder.
 My recommendation would be __libx265__ or __nvenc_hvec__  
 I've decided to use copy, so that even lower-end devices are able to handle those files properly*  
 
+>**Note:** *added "--hls-segment-threads" to increase th reliability of livestreamer.  
+Please adjust the Value numcpucores to match your device's cpu core,  
+my predefined default is 4.*  
+```python
+numcpucores = 4  <----- Enter amount of cpu cores here
+```
+
 ### ffmpeg-batch-creator.py
 Small and handy script to create some batch/shell script files for batch encoding using nvenc-hvec(x265)  
 **_Only use if you have a GTX 960 or better_**  

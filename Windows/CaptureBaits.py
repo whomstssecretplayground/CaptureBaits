@@ -7,6 +7,7 @@ import subprocess
 start_date = str(datetime.datetime.now().month) + "_" + str(datetime.datetime.now().day) + "_" + str(datetime.datetime.now().year)
 cwd = os.getcwd()
 modellist = []
+numcpucores = 4
 
 def print_modellist():
     print("\n\n\n----------------------------Modellist--------------------------")
@@ -130,7 +131,7 @@ def get_stream(playlist, directory, own_name):
     with open(baitlist_file, "a+", encoding="utf8") as bl:
         bl.write(own_name + "\n")
     if not os.path.isfile(stream_file):
-        subprocess.check_call(["cmd", "/c", "livestreamer", "--http-header", "User-Agent=Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0", "-o",  stream_file , hlsvar, "best"])
+        subprocess.check_call(["cmd", "/c", "livestreamer", "--hls-segment-threads", numcpucores, "--http-header", "User-Agent=Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0", "-o",  stream_file , hlsvar, "best"])
         os.chmod(stream_file, 0o666)
     modellist.remove(str(own_name))
     return
