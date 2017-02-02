@@ -5,7 +5,9 @@ import datetime
 import subprocess
 
 start_date = str(datetime.datetime.now().month) + "_" + str(datetime.datetime.now().day) + "_" + str(datetime.datetime.now().year)
-cwd = os.getcwd()
+cwd = os.getcwd() + "\\"
+encoded = cwd + "Videos\\"
+oneclick_file = cwd + start_date + "_oneclick.bat"
 modellist = []
 numcpucores = 4
 
@@ -17,32 +19,41 @@ def print_modellist():
 
 def create_wishlist():
     os.chdir(cwd)
-    wishlist_file = cwd + "\\wishlist.txt"
+    wishlist_file = cwd + "wishlist.txt"
     if not os.path.exists(wishlist_file) or os.stat(wishlist_file).st_size == 0:
         open(wishlist_file, "a+").close()
-        os.chmod(wishlist_file, 0o666)
         print("Please enter the Modelnames of the Models you would like to capture.")
         print("Will now exit!")
         time.sleep(5)
         exit(0)
     return
 
+def create_oneclick():
+    os.chdir(cwd)
+    if not os.path.exists(oneclick_file) or os.stat(oneclick_file).st_size == 0:
+        open(oneclick_file, "a+").close()
+    return
+
+
 def create_baitlist():
     os.chdir(cwd)
-    baitlist_file = cwd + "\\baitlist.txt"
+    baitlist_file = cwd + "baitlist.txt"
     with open(baitlist_file, "a+", encoding="utf8") as bl:
         bl.write("Current Baits from " + start_date + ":\n")
-    os.chmod(baitlist_file, 0o666)
     return
 
 def names_from_wishlist():
+    start_date = str(datetime.datetime.now().month) + "_" + str(datetime.datetime.now().day) + "_" + str(datetime.datetime.now().year)
+    oneclick_file = cwd + start_date + "_oneclick.bat"
     print("Starting Process")
     os.chdir(cwd)
-    captures = cwd + "\\Captures\\"
+    captures = cwd + "Captures\\"
     if not os.path.exists(captures):
         print("Creating Capture Directory")
         os.mkdir(captures)
-        os.chmod(captures, 0o775)
+    if not os.path.exists(encoded):
+        print("Creating Video Directory")
+        os.mkdir(encoded)
     with open("wishlist.txt", "r", encoding="utf8") as wl:
         print("Creating Sub-Directorys for each Model")
         for line in wl:
@@ -51,12 +62,11 @@ def names_from_wishlist():
                 modeldir = captures + line
                 if not os.path.exists(modeldir):
                     os.mkdir(modeldir)
-                    os.chmod(modeldir, 0o775)
                 f = modeldir + "\\" + start_date + "\\"
                 if not os.path.exists(f):
                     print("Creating Current Capture Directory")
                     os.mkdir(f)
-                    os.chmod(captures, 0o775)
+    
                 if str(line) not in modellist:
                     print("Creating Worker-Process for " + str(line))
                     time.sleep(2)
@@ -67,7 +77,6 @@ def get_source(out_file, url, modelname):
     print("Retrieving the Sourcefile for " + str(modelname))
     if not os.path.isfile(out_file):
         subprocess.check_call(["cmd", "/c", "wget", "-t", "5", "-q", "-O", out_file, url])
-        os.chmod(out_file, 0o666)
     print(modelname + ": Verifying Integrity")
     if os.path.getsize(out_file) < 10000:
         print(modelname + ": removin 0 byte Source and retrying!")
@@ -119,20 +128,19 @@ def get_stream(playlist, directory, own_name):
     modellist.append(str(own_name))
     start_time = "_" + str(datetime.datetime.now().hour) + "-" + str(datetime.datetime.now().minute)  
     ffs_script = directory + "ts_to_mp4.bat"
-    merged_file = directory + own_name + start_time + ".mp4"
+    merged_file = encoded + own_name + start_time + ".mp4"
     stream_file = directory + own_name + start_time + ".ts"
     with open(ffs_script, "a+", encoding="utf8") as ffs:
         ffs.write("\nffmpeg -i " + stream_file + " -strict -2 -c:v copy " + merged_file + "\n")
-        ffs.write("chmod 666 " + merged_file + "\n")
-    os.chmod(ffs_script, 0o777)
+    with open(oneclick_file, "a+", encoding="utf8") as ocf:
+        ocf.write("\nffmpeg -i " + stream_file + " -strict -2 -c:v copy " + merged_file + "\n")
     hlsvar = "hlsvariant://" + playlist
     print("Retrieving the Streamfile for " + str(own_name))
-    baitlist_file = cwd + "\\baitlist.txt"
+    baitlist_file = cwd + "baitlist.txt"
     with open(baitlist_file, "a+", encoding="utf8") as bl:
         bl.write(own_name + "\n")
     if not os.path.isfile(stream_file):
-        subprocess.check_call(["cmd", "/c", "livestreamer", "--hls-segment-threads", numcpucores, "--http-header", "User-Agent=Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0", "-o",  stream_file , hlsvar, "best"])
-        os.chmod(stream_file, 0o666)
+        subprocess.check_call(["cmd", "/c", "livestreamer", "--hls-segment-threads", str(numcpucores), "--retry-streams", "5", "--retry-open", "5", "--hls-segment-attempts", "5", "--hls-segment-timeout", "20", "--http-header", "User-Agent=Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0", "-o",  stream_file , hlsvar, "best"])
     modellist.remove(str(own_name))
     return
 
@@ -140,6 +148,7 @@ def main():
     os.umask(0)
     create_wishlist()
     create_baitlist()
+    create_oneclick()
     names_from_wishlist()
     while True:
         names_from_wishlist()

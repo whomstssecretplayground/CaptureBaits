@@ -5,7 +5,9 @@ import datetime
 import subprocess
 
 start_date = str(datetime.datetime.now().month) + "_" + str(datetime.datetime.now().day) + "_" + str(datetime.datetime.now().year)
-cwd = os.getcwd()
+cwd = os.getcwd() + "/"
+encoded = cwd + "Videos/"
+oneclick_file = cwd + start_date + "_oneclick.sh"
 modellist = []
 numcpucores = 4
 
@@ -17,7 +19,7 @@ def print_modellist():
 
 def create_wishlist():
     os.chdir(cwd)
-    wishlist_file = cwd + "/wishlist.txt"
+    wishlist_file = cwd + "wishlist.txt"
     if not os.path.exists(wishlist_file) or os.stat(wishlist_file).st_size == 0:
         open(wishlist_file, "a+").close()
         os.chmod(wishlist_file, 0o666)
@@ -27,22 +29,35 @@ def create_wishlist():
         exit(0)
     return
 
+def create_oneclick():
+    os.chdir(cwd)
+    if not os.path.exists(oneclick_file) or os.stat(oneclick_file).st_size == 0:
+        open(oneclick_file, "a+").close()
+        os.chmod(oneclick_file, 0o777)
+    return
+
 def create_baitlist():
     os.chdir(cwd)
-    baitlist_file = cwd + "/baitlist.txt"
+    baitlist_file = cwd + "baitlist.txt"
     with open(baitlist_file, "a+", encoding="utf8") as bl:
         bl.write("Current Baits from " + start_date + ":\n")
     os.chmod(baitlist_file, 0o666)
     return
 
 def names_from_wishlist():
+    start_date = str(datetime.datetime.now().month) + "_" + str(datetime.datetime.now().day) + "_" + str(datetime.datetime.now().year)
+    oneclick_file = cwd + start_date + "_oneclick.sh"
     print("Starting Process")
     os.chdir(cwd)
-    captures = cwd + "/Captures/"
+    captures = cwd + "Captures/"
     if not os.path.exists(captures):
         print("Creating Capture Directory")
         os.mkdir(captures)
         os.chmod(captures, 0o775)
+    if not os.path.exists(encoded):
+        print("Creating Video Directory")
+        os.mkdir(encoded)
+        os.chmod(encoded, 0o775)
     with open("wishlist.txt", "r", encoding="utf8") as wl:
         print("Creating Sub-Directorys for each Model")
         for line in wl:
@@ -119,19 +134,23 @@ def get_stream(playlist, directory, own_name):
     modellist.append(str(own_name))
     start_time = "_" + str(datetime.datetime.now().hour) + "-" + str(datetime.datetime.now().minute)  
     ffs_script = directory + "ts_to_mp4.sh"
-    merged_file = directory + own_name + start_time + ".mp4"
+    merged_file = encoded + own_name + start_time + ".mp4"
     stream_file = directory + own_name + start_time + ".ts"
     with open(ffs_script, "a+", encoding="utf8") as ffs:
         ffs.write("\nffmpeg -i " + stream_file + " -strict -2 -c:v copy " + merged_file + "\n")
         ffs.write("chmod 666 " + merged_file + "\n")
     os.chmod(ffs_script, 0o777)
+    with open(oneclick_file, "a+", encoding="utf8") as ocf:
+        ocf.write("\nffmpeg -i " + stream_file + " -strict -2 -c:v copy " + merged_file + "\n")
+        ocf.write("chmod 666 " + merged_file + "\n")
+    os.chmod(oneclick_file, 0o777)
     hlsvar = "hlsvariant://" + playlist
     print("Retrieving the Streamfile for " + str(own_name))
-    baitlist_file = cwd + "/baitlist.txt"
+    baitlist_file = cwd + "baitlist.txt"
     with open(baitlist_file, "a+", encoding="utf8") as bl:
         bl.write(own_name + "\n")
     if not os.path.isfile(stream_file):
-        subprocess.check_call(["livestreamer", "--hls-segment-threads", numcpucores, "--http-header", "User-Agent=Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0", "-o",  stream_file , hlsvar, "best"])
+        subprocess.check_call(["livestreamer", "--hls-segment-threads", str(numcpucores), "--retry-streams", "5", "--retry-open", "5", "--hls-segment-attempts", "5", "--hls-segment-timeout", "20", "--http-header", "User-Agent=Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0", "-o",  stream_file , hlsvar, "best"])
         os.chmod(stream_file, 0o666)
     modellist.remove(str(own_name))
     return
@@ -140,6 +159,7 @@ def main():
     os.umask(0)
     create_wishlist()
     create_baitlist()
+    create_oneclick()
     names_from_wishlist()
     while True:
         names_from_wishlist()

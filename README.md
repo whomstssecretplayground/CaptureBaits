@@ -63,7 +63,8 @@ Execute the Shell Scripts:
 * It will search the Whishlist for Modelnames and parse a (if possible) valid URL to grab the Webpage-Source
 * If the Model is offline it will start from the beginning, else it will extract the Playlist
 * The Playlist is handed over to livestreamer, which will do the capturing
-* Execute the *ts_to_mp4.sh/ts_to_mp4.bat* to simply copy the data from *.ts* to *.mp4*  
+* Execute the *ts_to_mp4.sh/ts_to_mp4.bat* to simply copy the data from *.ts* to *.mp4* for each Model
+* or alternatively use the *oneclick.bat/oneclick.sh* to batch copy/encode for all Models
 It seems that videoplayers can't handle *.ts* that good compared to *.mp4* 
 
 >**Note:** *some streams are lagging, this might be either due to the Model(s)'s Bandwith or your Bandwith.  
