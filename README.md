@@ -57,7 +57,7 @@ Execute the Shell Scripts:
 
 >*Exit via Ctrl + C*
 
-### How CaptureBaits work
+### How CaptureBaits works
 
 * If there is no "Whishlist" or  it's empty it will create whishlist.txt and exit
 * It will search the Whishlist for Modelnames and parse a (if possible) valid URL to grab the Webpage-Source
