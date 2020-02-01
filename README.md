@@ -20,6 +20,7 @@ For more Informations please read the LICENSE
 * Download and Install Python3 from [Python Downloadpage](https://www.python.org/downloads/)  
 [add Python3 to PATH during installation and disable Path-Limit (Windows only)]
 * ```python -m pip install --user -r requirements.txt```
+* ```python CaptureBaits.py```
 
 ### How CaptureBaits works
 
