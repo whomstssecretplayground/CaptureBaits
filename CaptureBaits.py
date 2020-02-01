@@ -59,7 +59,6 @@ def print_capturelist():
 def create_wishlist():
     if not os.path.exists(WISHLIST_FILE) or os.stat(WISHLIST_FILE).st_size == 0:
         open(WISHLIST_FILE, "a+").close()
-        #os.chmod(WISHLIST_FILE, 0o666)
         LOGGER.error("Please enter the Modelnames of the Models you would like to capture.")
         LOGGER.error("Will now exit!")
         exit(0)
@@ -85,7 +84,6 @@ def bait_models():
     for model in MODELLIST:
         if model not in CAPTURELIST:
             LOGGER.info(f"Creating Worker-Process for {model}")
-            #time.sleep(randint(0,5))
             future_metadata = {EXECUTOR.submit(
                 retrieve_stream, model): model}
             CAPTURELIST.append(model)
@@ -131,7 +129,6 @@ def retrieve_stream(modelname):
         return modelname
 
 def __main__():
-    #os.umask(0)
     create_wishlist()
     names_from_wishlist()
     try:
