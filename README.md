@@ -17,89 +17,16 @@ For more Informations please read the LICENSE
 
 ## Requirements
 
-### Requirements \*nix
-
-* Install ffmpeg via your package manager
-* Install Python3 via your package manager
-* Install livestreamer via your package manager
-* Install wget via your package manager (you should seriously have this pre-installed)
-* Download or Clone this Repo
-
-### Requirements Windows
-
-* Download and Install Python3 from [Python Downloadpage](https://www.python.org/downloads/release/python-360/)  
-add Python3 to PATH during installation and disable Path-Limit
-* Download ffmpeg from [ffmpeg Downloadpage](https://ffmpeg.zeranoe.com/builds/) as static linked Version  
-Unpack the downloaded Archive and move Content to SysWoW64 and System32
-* Download livestreamer from [livestreamer Downloadpage](http://docs.livestreamer.io/install.html#windows-binaries)  
-Install and copy livestreamer.exe from Installation-Folder to SysWoW64 and System32
-* Download wget from [Wget Downloadpage](https://eternallybored.org/misc/wget/)  
-Unpack the downloaded Archive and move Content to SysWoW64 and System32
-* Download or Clone this Repo
-
-## How to use
-
-### \*nix
-Open Directory in Terminal
-Execute the Shell Scripts:
-* run_capturebaits.sh -> Recommended
-* run_capturebaits_logging.sh -> if you want logging 
-* run_capturebaits_verbose.sh -> if you want logged debug output to help me with fixing Issues
-
->*Exit via Ctrl + C*
-
-### Windows
-Either open Directory in CMD and execute python Capturebaits.py or
-Execute the Shell Scripts:
-* run_capturebaits.bat -> Recommended
-* run_capturebaits_logging.bat -> if you want logging 
-* run_capturebaits_verbose.bat -> if you want logged debug output to help me with fixing Issues
-
->*Exit via Ctrl + C*
+* Download and Install Python3 from [Python Downloadpage](https://www.python.org/downloads/)  
+[add Python3 to PATH during installation and disable Path-Limit (Windows only)]
+* ```python -m pip install --user -r requirements.txt```
 
 ### How CaptureBaits works
 
 * If there is no "Whishlist" or  it's empty it will create whishlist.txt and exit
 * It will search the Whishlist for Modelnames and parse a (if possible) valid URL to grab the Webpage-Source
 * If the Model is offline it will start from the beginning, else it will extract the Playlist
-* The Playlist is handed over to livestreamer, which will do the capturing
-* Execute the *ts_to_mp4.sh/ts_to_mp4.bat* to simply copy the data from *.ts* to *.mp4* for each Model
-* or alternatively use the *oneclick.bat/oneclick.sh* to batch copy/encode for all Models
-It seems that videoplayers can't handle *.ts* that good compared to *.mp4* 
+* The Playlist is handed over to streamlink, which will do the capturing
+* Happy Fappening
 
 >**Note:** *some streams are lagging, this might be either due to the Model(s)'s Bandwith or your Bandwith.  
-This can mostly be reduced/fix by reencoding the .ts using a __real__ encoder.  
-My recommendation would be __libx265__ or __nvenc_hvec__  
-I've decided to use copy, so that even lower-end devices are able to handle those files properly*  
-
->**Note:** *added "--hls-segment-threads" to increase th reliability of livestreamer.  
-Please adjust the Value numcpucores to match your device's cpu core,  
-my predefined default is 4.*  
-```python
-numcpucores = 4  <----- Enter amount of cpu cores here
-```
-
-### ffmpeg-batch-creator.py
-Small and handy script to create some batch/shell script files for batch encoding using nvenc-hvec(x265)  
-**_Only use if you have a GTX 960 or better_**  
-Just dump all the *.ts* files into one **folder** and run
-
-##### \*nix
-> find **path/to/folder** -maxdepth 1 -type f | tee list.txt
-
-Let ffmpeg-batch-creator.py run through list.txt  
-This will create a bunch of *.sh* files to encode the videos 
-
-#### Windows
-> dir **path\\to\\folder** /b /s /A-D /o:gn > list.txt  
-
-Let ffmpeg-batch-creator.py run through list.txt  
-This will create a bunch of *.bat* files to encode the videos
-
-**Alternatively you can just change the encoding option from "-c:v copy" to "-c:v \*yourpreferedencoder\*",**  
-**in the function get_stream()**
-```python
-with open(ffs_script, "a+", encoding="utf8") as ffs:
-        ffs.write("\nffmpeg -i " + stream_file + " -strict -2 -c:v copy " + merged_file + "\n")
-        ffs.write("chmod 666 " + merged_file + "\n")
-```
